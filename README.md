@@ -9,4 +9,4 @@ It is implemented in MineSolver.py.
 Unpack Arbiter__0.52.3.zip, run ms_arbiter.exe, select a difficulty according to the code setting, then run the code and enjoy it!
 
 # Demo
-![image](https://github.com/Cosinhs/MineSweeperAI/Video_2019-02-27_001928.gif)
+![image](https://github.com/Cosinhs/MineSweeperAI/blob/master/Video_2019-02-27_001928.gif)
