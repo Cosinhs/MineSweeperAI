@@ -10,7 +10,7 @@ import time
 
 lclick_t = 0.1
 
-level = "n"
+level = "e"
 
 if level == "e":
     blocks_x_num, blocks_y_num = 8, 8
@@ -42,7 +42,9 @@ img_dict = {img_0: 0, img_1: 1, img_2: 2, img_3: 3, img_4: 4,
 
     
 # 扫描雷区图像
-def scan_map(rect):
+def scan_map():
+    global num
+    global unknown
     num_img = []
     unknown_img = []
     game_img = ImageGrab.grab().crop(rect)
@@ -63,12 +65,12 @@ def scan_map(rect):
             elif game_map[(i, j)] in range(1, 9) and \
                  (i, j) not in num_blocks_not_consider:
                 num_img.append((i, j))
-    return (num_img, unknown_img)
+    num, unknown = num_img, unknown_img
 
 def get_around(i, j):
     t = []
     for tt in [(i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1)]:
-        if 0<=tt[0]<=blocks_y_num-1 and 0<=tt[1]<=blocks_x_num-1:
+        if tt[0] in range(blocks_y_num) and tt[1] in range(blocks_x_num):
             t.append(tt)
     return t
 
@@ -117,39 +119,48 @@ bottom -= 42
 rect = (left, top, right, bottom)
 
 game_map = dict()
-num, unknown = scan_map(rect)
+num, unknown = [], []
+scan_map()
 
 num_blocks_not_consider = set()
 
 while True:
+    no_choice_for_naive_strategy = True
+    
     if len(unknown) == 0:
         print("win")
         sys.exit(0)
 
-    no_choice_for_naive_strategy = True
+    if len(num) == 0:
+        r = random.choice(unknown)
+        lclick(*r)
+        time.sleep(lclick_t)
+        scan_map()
         
     for t in num[:]:
-        around_unknown_img = []  
+        around_unknown_blocks = []  
         flag = 0  
         for e in get_around(*t):
             if game_map[e] == -1:  
-                around_unknown_img.append(e)
+                around_unknown_blocks.append(e)
             elif game_map[e] == -2:  
                 flag += 1
         
-        if len(around_unknown_img) == 0:
+        if len(around_unknown_blocks) == 0:
             num_blocks_not_consider.add(t)
+            num.remove(t)
         elif flag == game_map[t]: # 周围安全
             num_blocks_not_consider.add(t)
             no_choice_for_naive_strategy = False
-            for e in around_unknown_img:
+            for e in around_unknown_blocks:
                 lclick(*e)
                 time.sleep(lclick_t)
-                num, unknown = scan_map(rect)
-        elif len(around_unknown_img) == game_map[t] - flag: # 说明周围全是雷，右键点击所有格
+                scan_map()
+        elif len(around_unknown_blocks) == game_map[t] - flag: # 说明周围全是雷，右键点击所有格
             num_blocks_not_consider.add(t)
             no_choice_for_naive_strategy = False
-            for e in around_unknown_img:
+            num.remove(t)
+            for e in around_unknown_blocks:
                 rclick(*e)
                 game_map[e] = -2
                 unknown.remove(e)
@@ -158,5 +169,5 @@ while True:
         r = random.choice(unknown)
         lclick(*r)
         time.sleep(lclick_t)
-        num, unknown = scan_map(rect)
+        scan_map()
 
