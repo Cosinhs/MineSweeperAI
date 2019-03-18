@@ -13,7 +13,7 @@ from utils import gauss, get_connected_parts, get_x_sol
 
 click_t = 0.1
 debug = False
-level = "n"
+level = "h"
 
 if level == "e":
     blocks_x_num, blocks_y_num, left_mines = 8, 8, 10
@@ -240,7 +240,7 @@ while True:
             mat_to_solve.append([1]*len(x_to_solve))
             mat_to_solve[-1].append(left_mines)
 
-        mat_to_solve, fix, free = gauss(mat_to_solve, x_to_solve)                    
+        mat_to_solve, x_to_solve, fix, free = gauss(mat_to_solve, x_to_solve)                    
         connected_parts = get_connected_parts(mat_to_solve, fix, free)
         x_with_sol, x_with_possibility_sol = get_x_sol(\
             mat_to_solve, x_to_solve, connected_parts, left_mines)

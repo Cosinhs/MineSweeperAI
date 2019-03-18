@@ -41,7 +41,7 @@ def gauss(mat_to_solve, x_to_solve):
     for i in range(len(free)):
         free[i] = i + len(fix)
         
-    return mat_to_solve, fix, free
+    return mat_to_solve, x_to_solve, fix, free
 
 def create_graph(mat_to_solve, fix, free):
     rows_cols_graph = dict()
