@@ -86,7 +86,6 @@ def rclick(i, j):
     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
 
 
-# 窗口坐标
 left = 0
 top = 0
 right = 0
@@ -175,7 +174,7 @@ while True:
                               None, 'pink', 2)
                 game_img.save(f'{debug_folder}\\{outer_loop}\\{inner_loop}.jpg')
 
-        elif flag == game_map[t]: # 周围安全
+        elif flag == game_map[t]:
             no_choice_for_naive_strategy = False
             num_block_not_try.add(t)
             
