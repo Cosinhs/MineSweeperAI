@@ -191,7 +191,7 @@ while True:
                               None, 'blue', 2)
                 game_img.save(f'{debug_folder}\\{outer_loop}\\{inner_loop}.jpg')
 
-        elif len(around_unknown_blocks) == game_map[t] - flag: # 说明周围全是雷，右键点击所有格
+        elif len(around_unknown_blocks) == game_map[t] - flag: 
             no_choice_for_naive_strategy = False
             num_block_not_try.add(t)
             
