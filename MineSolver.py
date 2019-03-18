@@ -241,13 +241,13 @@ while True:
 
         mat_to_solve, x_to_solve, fix, free = gauss(mat_to_solve, x_to_solve)                    
         connected_parts = get_connected_parts(mat_to_solve, fix, free)
-        x_with_sol, x_with_possibility_sol = get_x_sol(\
+        x_sol, x_possibility_sol = get_x_sol(\
             mat_to_solve, x_to_solve, connected_parts, left_mines)
         
-        if len(x_with_sol) != 0:
-            for x in x_with_sol:
+        if len(x_sol) != 0:
+            for x in x_sol:
                 inner_loop += 1
-                if x_with_sol[x] == 1:
+                if x_sol[x] == 1:
                     rclick(*x)
                     time.sleep(click_t)
                     game_map[x] = "flag"
@@ -272,10 +272,10 @@ while True:
                                           None, 'blue', 2)
                             game_img.save(f'{debug_folder}\\{outer_loop}\\{inner_loop}_.jpg')
         else:
-            t = sorted(x_with_possibility_sol, key = lambda x: x_with_possibility_sol[x])
-            if x_with_possibility_sol[t[0]] < 0.125:
+            t = sorted(x_possibility_sol, key = lambda x: x_possibility_sol[x])
+            if x_possibility_sol[t[0]] < 0.125:
                 r = t[0]
-                print(x_with_possibility_sol[t[0]])
+                print(x_possibility_sol[t[0]])
             else:
                 r = random.choice(unknown)
             lclick(*r)
@@ -287,3 +287,4 @@ while True:
                               (r[1]+1)*block_width, (r[0]+1)*block_height),
                               None, 'yellow', 2)
                 game_img.save(f'{debug_folder}\\{outer_loop}\\random.jpg')
+

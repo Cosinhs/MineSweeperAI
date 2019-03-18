@@ -86,11 +86,11 @@ def get_connected_parts(mat_to_solve, fix, free):
     return connected_parts
 
 def get_x_sol(mat_to_solve, x_to_solve, connected_parts, left_mines):
-    x_with_sol, x_with_possibility_sol = dict(), dict()
+    x_sol, x_possibility_sol = dict(), dict()
     
     for part in connected_parts:
         if len(part[1]) == 0:
-            x_with_sol[x_to_solve[part[0][0]]] = mat_to_solve[part[0][0]][-1]
+            x_sol[x_to_solve[part[0][0]]] = mat_to_solve[part[0][0]][-1]
         else:
             total = itertools.product(*[[0, 1]]*len(part[1]))
             all_possible = []
@@ -116,11 +116,11 @@ def get_x_sol(mat_to_solve, x_to_solve, connected_parts, left_mines):
                     if all_possible[i][j] == 1:
                         count_1 += 1
                 if count_1 == len(all_possible):
-                    x_with_sol[x_to_solve[p[j]]] = 1
+                    x_sol[x_to_solve[p[j]]] = 1
                 elif count_1 == 0:
-                    x_with_sol[x_to_solve[p[j]]] = 0
+                    x_sol[x_to_solve[p[j]]] = 0
                 else:
-                    x_with_possibility_sol[x_to_solve[p[j]]] = count_1/len(all_possible)
+                    x_possibility_sol[x_to_solve[p[j]]] = count_1/len(all_possible)
 
-    return x_with_sol, x_with_possibility_sol
+    return x_sol, x_possibility_sol
 
