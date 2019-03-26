@@ -1,29 +1,4 @@
 #https://zhuanlan.zhihu.com/p/39669361
-import win32gui
-import win32api
-#import win32com.client
-import win32con
-from PIL import Image, ImageDraw, ImageGrab
-import os
-import shutil
-import random
-import sys
-import time
-from utils import gauss, get_connected_parts, get_x_sol
-
-click_t = 0.1
-debug = False
-level = "h"
-
-if level == "e":
-    blocks_x_num, blocks_y_num, left_mines = 8, 8, 10
-elif level == "n":
-    blocks_x_num, blocks_y_num, left_mines = 16, 16, 40
-elif level == "h":
-    blocks_x_num, blocks_y_num, left_mines = 30, 16, 99
-    
-block_width, block_height = 16, 16
-
 img_unknown = ((54, (255, 255, 255)), (148, (192, 192, 192)), (54, (128, 128, 128)))
 img_flag = ((54, (255, 255, 255)), (17, (255, 0, 0)),
             (109, (192, 192, 192)), (54, (128, 128, 128)), (22, (0, 0, 0)))
@@ -44,6 +19,21 @@ img_boom_red = ((4, (255, 255, 255)), (144, (255, 0, 0)),
 img_dict = {img_0: 0, img_1: 1, img_2: 2, img_3: 3, img_4: 4,
             img_5: 5, img_6: 6, img_7: 7, img_8: 8, img_unknown: "unknown",
             img_flag: "flag", img_boom: "dead", img_boom_red: "dead"}
+    
+block_width, block_height = 16, 16
+
+level = "h"
+if level == "e":
+    blocks_x_num, blocks_y_num, left_mines = 8, 8, 10
+elif level == "n":
+    blocks_x_num, blocks_y_num, left_mines = 16, 16, 40
+elif level == "h":
+    blocks_x_num, blocks_y_num, left_mines = 30, 16, 99
+    
+click_t = 0.1
+
+from utils import *
+from PIL import Image, ImageDraw, ImageGrab
 
 def scan_map(game_img):
     game_map = {}
@@ -51,16 +41,16 @@ def scan_map(game_img):
     unknown_blocks = []
     for i in range(blocks_y_num):
         for j in range(blocks_x_num):
-            this_image = tuple(game_img.crop((j*block_width, i*block_height,
+            this_img_data = tuple(game_img.crop((j*block_width, i*block_height,
                                               (j+1)*block_width, (i+1)*block_height)).getcolors())
-            if this_image not in img_dict:
+            if this_img_data not in img_dict:
                 print("无法识别图像")
                 print("坐标: ", (i, j))
                 sys.exit(1)
-            if img_dict[this_image]=="dead":
+            if img_dict[this_img_data]=="dead":
                 print("game over")
                 sys.exit(0)
-            game_map[(i, j)] = img_dict[this_image]
+            game_map[(i, j)] = img_dict[this_img_data]
             if game_map[(i, j)] == "unknown":
                 unknown_blocks.append((i, j))
             elif game_map[(i, j)] in range(1, 9) and \
@@ -85,34 +75,34 @@ def rclick(i, j):
     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
 
-
-left = 0
-top = 0
-right = 0
-bottom = 0
+import win32gui, win32api, win32con
 
 class_name = "TMain"
 title_name = "Minesweeper Arbiter "
 hwnd = win32gui.FindWindow(class_name, title_name)
-
 if hwnd:
     print("找到窗口")
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
-    #shell = win32com.client.Dispatch("WScript.Shell")
-    #shell.SendKeys('%')
     win32gui.SetForegroundWindow(hwnd)
     print("窗口坐标：")
     print(str(left)+', '+str(top)+'  '+str(right)+', '+str(bottom))
 else:
     print("未找到窗口")
     sys.exit(1)
-    
+
 left += 15
 top += 101
 right -= 15
 bottom -= 42
 rect = (left, top, right, bottom)
 
+import os
+import sys
+import shutil
+import random
+import time
+
+debug = False
 debug_folder = os.getcwd() + '\\debug'
 if os.path.exists(debug_folder):
     shutil.rmtree(debug_folder)
@@ -120,6 +110,7 @@ os.mkdir(debug_folder)
 
 outer_loop = -1
 num_block_not_try = set()
+random_click = []
 
 while True:
     outer_loop += 1
@@ -140,6 +131,7 @@ while True:
         r = random.choice(unknown)
         lclick(*r)
         time.sleep(click_t)
+        random_click.append(r)
         if debug:
             game_img = ImageGrab.grab(rect)
             draw = ImageDraw.Draw(game_img)
@@ -179,16 +171,17 @@ while True:
             num_block_not_try.add(t)
             
             for e in around_unknown_blocks:
-                lclick(*e)
-                time.sleep(click_t)
-            game_img = ImageGrab.grab(rect)
-            game_map = scan_map(game_img)[0]
-            if debug:
-                draw = ImageDraw.Draw(game_img)
-                draw.rectangle((t[1]*block_width, t[0]*block_height,
-                              (t[1]+1)*block_width, (t[0]+1)*block_height),
-                              None, 'blue', 2)
-                game_img.save(f'{debug_folder}\\{outer_loop}\\{inner_loop}.jpg')
+                if game_map[e] == "unknown":
+                    lclick(*e)
+                    time.sleep(click_t)
+                    game_img = ImageGrab.grab(rect)
+                    game_map = scan_map(game_img)[0]
+                    if debug:
+                        draw = ImageDraw.Draw(game_img)
+                        draw.rectangle((t[1]*block_width, t[0]*block_height,
+                                      (t[1]+1)*block_width, (t[0]+1)*block_height),
+                                      None, 'blue', 2)
+                        game_img.save(f'{debug_folder}\\{outer_loop}\\{inner_loop}.jpg')
 
         elif len(around_unknown_blocks) == game_map[t] - flag: 
             no_choice_for_naive_strategy = False
@@ -278,6 +271,7 @@ while True:
                 print(x_possibility_sol[t[0]])
             else:
                 r = random.choice(unknown)
+                random_click.append(r)
             lclick(*r)
             time.sleep(click_t)   
             if debug:

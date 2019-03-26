@@ -8,6 +8,6 @@ In fact, we just need to solve a linear system of equations which may not has a 
 Unpack Arbiter__0.52.3.zip, run ms_arbiter.exe, select a difficulty according to the code setting, then run the script and enjoy it!
 
 # Demo  
-![image](https://github.com/Cosinhs/MineSweeperAI/blob/master/easy.gif)  
-![image](https://github.com/Cosinhs/MineSweeperAI/blob/master/normal.gif)  
-![image](https://github.com/Cosinhs/MineSweeperAI/blob/master/hard.gif)  
+![image](https://github.com/Cosinhs/MineSweeperAI/blob/master/demo_play/easy.gif)  
+![image](https://github.com/Cosinhs/MineSweeperAI/blob/master/demo_play/normal.gif)  
+![image](https://github.com/Cosinhs/MineSweeperAI/blob/master/demo_play/hard.gif)  

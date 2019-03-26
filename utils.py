@@ -44,7 +44,7 @@ def gauss(mat_to_solve, x_to_solve):
     return mat_to_solve, x_to_solve, fix, free
 
 def create_graph(mat_to_solve, fix, free):
-    rows_cols_graph = dict()
+    rows_cols_graph = {}
     for i in range(len(mat_to_solve[0])-1):
         rows_cols_graph[i] = []
     for i in fix:
@@ -86,7 +86,7 @@ def get_connected_parts(mat_to_solve, fix, free):
     return connected_parts
 
 def get_x_sol(mat_to_solve, x_to_solve, connected_parts, left_mines):
-    x_sol, x_possibility_sol = dict(), dict()
+    x_sol, x_possibility_sol = {}, {}
     
     for part in connected_parts:
         if len(part[1]) == 0:
@@ -124,3 +124,19 @@ def get_x_sol(mat_to_solve, x_to_solve, connected_parts, left_mines):
 
     return x_sol, x_possibility_sol
 
+if __name__ == "__main__": 
+    mat_to_solve = [[1,1,0,0,0,0,0,0,0,0,0,1],
+                    [0,0,1,1,1,0,0,0,0,0,0,1],
+                    [0,1,0,0,0,1,1,0,0,0,0,1],
+                    [0,0,0,0,1,0,0,1,0,0,0,1],
+                    [0,0,0,0,1,0,0,1,1,1,1,2],
+                    [0,0,0,0,0,0,0,1,0,0,1,1],
+                    [0,0,0,0,0,0,1,0,0,0,1,1]]
+    x_to_solve = [(0,12),(1,12),(0,9),(1,9),(2,9),(2,12),(3,12),(3,9),(2,10),(2,11),(3,11)]
+    left_mines = 6
+
+    mat_to_solve, x_to_solve, fix, free = gauss(mat_to_solve, x_to_solve)                    
+    connected_parts = get_connected_parts(mat_to_solve, fix, free)
+    x_sol, x_possibility_sol = get_x_sol(\
+                mat_to_solve, x_to_solve, connected_parts, left_mines)
+    print(x_sol, '\n', x_possibility_sol)
